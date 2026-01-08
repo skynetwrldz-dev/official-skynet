@@ -3,81 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SKYNETWRLDZ | Mega Store</title>
+    <title>SKYNETWRLDZ | Mega Shop</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { margin: 0; font-family: 'Segoe UI', sans-serif; background-color: #f4f4f4; color: #333; }
-        .top-nav { background: #fff; padding: 10px 5%; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 1000; }
-        .logo { color: #FF8C00; font-size: 26px; font-weight: 900; text-decoration: none; }
-        .promo-ribbon { background: #d61c1c; color: white; padding: 10px; text-align: center; font-size: 13px; font-weight: bold; }
-        .search-bar { width: 90%; max-width: 600px; margin: 20px auto; display: block; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; }
-        .main-container { display: grid; grid-template-columns: 260px 1fr; gap: 20px; padding: 0 5% 20px; }
-        .sidebar-box { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        .cat-link { display: block; padding: 10px 0; font-size: 14px; color: #555; cursor: pointer; border-bottom: 1px solid #eee; }
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; }
-        .product-card { background: white; padding: 15px; border-radius: 8px; border: 1px solid #eee; transition: 0.3s; }
-        .product-img { width: 100%; height: 150px; object-fit: cover; border-radius: 6px; }
-        .product-name { font-size: 14px; margin: 10px 0; font-weight: 600; height: 35px; overflow: hidden; }
-        .product-price { color: #222; font-size: 18px; font-weight: bold; }
-        .btn-buy { background: #FF8C00; color: white; border: none; width: 100%; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 10px; }
-        #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; }
-        .modal-box { background: white; padding: 25px; border-radius: 12px; width: 90%; max-width: 400px; }
-        .modal-box input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
-        .total-row { font-weight: bold; font-size: 18px; color: #d61c1c; border-top: 1px solid #ddd; padding-top: 10px; margin-top: 10px; display: flex; justify-content: space-between; }
-        .btn-wa { background: #25D366; color: white; border: none; width: 100%; padding: 15px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px; width: 100%; }
-        @media (max-width: 768px) { .main-container { grid-template-columns: 1fr; } .sidebar-box { display: none; } }
+        body { background-color: #f1f1f2; font-family: 'Roboto', sans-serif; }
+        .jumia-orange { background-color: #f68b1e; }
+        .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; padding: 8px; }
     </style>
 </head>
-<body>
-    <div class="promo-ribbon">🎊 SKYNET MEGA SALE: Use code <b>SKYNET10</b> for ₦3,000 OFF! 🎊</div>
-    <nav class="top-nav"><a href="#" class="logo">SKYNETWRLDZ</a><div style="font-weight:bold; color:#25D366;">WhatsApp Shop</div></nav>
-    <input type="text" id="searchInput" class="search-bar" placeholder="Search for iPhones, TVs, Blenders..." onkeyup="searchProducts()">
-    <div class="main-container">
-        <aside><div class="sidebar-box"><h4>Departments</h4><div class="cat-link" onclick="loadStock('all')">📍 All</div><div class="cat-link" onclick="loadStock('high')">📱 Tech</div><div class="cat-link" onclick="loadStock('kitchen')">🍳 Kitchen</div><div class="cat-link" onclick="loadStock('tv')">📺 TV</div><div class="cat-link" onclick="loadStock('jewelry')">💎 Jewelry</div></div></aside>
-        <main><div id="grid" class="product-grid"></div></main>
+<body class="pb-24">
+
+    <header class="sticky top-0 jumia-orange p-3 shadow-md z-50 text-white">
+        <h1 class="text-xl font-black italic">SKYNETWRLDZ</h1>
+        <input type="text" id="searchInput" onkeyup="search()" placeholder="Search phones & more..." class="w-full mt-2 p-2 rounded text-black text-sm outline-none">
+    </header>
+
+    <div id="productGrid" class="product-grid"></div>
+
+    <div id="cartBar" class="fixed bottom-0 left-0 right-0 bg-white border-t p-4 flex justify-between items-center hidden z-50">
+        <div><p class="text-[10px] text-gray-400 font-bold">TOTAL</p><p id="totalPrice" class="text-lg font-black text-orange-600">₦0</p></div>
+        <button onclick="openModal()" class="bg-orange-500 text-white px-6 py-3 rounded font-bold">PROCEED</button>
     </div>
-    <div id="modal"><div class="modal-box"><h3 id="mTitle">Checkout</h3><input type="text" id="promoInput" placeholder="Promo Code"><div class="total-row"><span>Total:</span> <span id="sumTotal">₦0</span></div><input type="text" id="custName" placeholder="Full Name"><input type="text" id="custAddr" placeholder="Delivery Address"><button class="btn-wa" onclick="sendToWhatsapp()">CONFIRM ON WHATSAPP</button><button style="background:none; border:none; color:grey; width:100%; margin-top:10px;" onclick="closeModal()">Cancel</button></div></div>
-    <script>
-        const myNumber = "2348123456789"; 
-        let selectedItem = {};
-        const stock = [
-            { name: "iPhone 16 Pro Max", price: 1857000, type: "high", img: "https://loremflickr.com/400/400/iphone" },
-            { name: "HP Elitebook G5", price: 357000, type: "high", img: "https://loremflickr.com/400/400/laptop" },
-            { name: "Digital Air Fryer 5L", price: 72000, type: "kitchen", img: "https://loremflickr.com/400/400/airfryer" },
-            { name: "Silvercrest Blender", price: 42000, type: "kitchen", img: "https://loremflickr.com/400/400/blender" },
-            { name: "55' LG 4K Smart TV", price: 657000, type: "tv", img: "https://loremflickr.com/400/400/television" },
-            { name: "Iced Out Cuban Link", price: 47000, type: "jewelry", img: "https://loremflickr.com/400/400/gold,chain" }
-        ];
-        function loadStock(type = 'all') {
-            const grid = document.getElementById('grid');
-            grid.innerHTML = '';
-            stock.filter(i => type === 'all' || i.type === type).forEach((item, idx) => {
-                grid.innerHTML += `<div class="product-card"><img src="${item.img}?lock=${idx}" class="product-img"><div class="product-name">${item.name}</div><div class="product-price">₦ ${item.price.toLocaleString()}</div><button class="btn-buy" onclick="openModal('${item.name}', ${item.price})">BUY NOW</button></div>`;
-            });
+
+    <div id="modal" class="fixed inset-0 bg-black/90 hidden z-[200] flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl p-6 w-full max-w-sm">
+            <h2 class="text-lg font-bold border-b pb-2 mb-4">🏦 BANK TRANSFER</h2>
+            <div class="bg-blue-50 p-4 rounded text-center mb-4 text-black">
+                <p class="text-xl font-black text-blue-900">9075773669</p>
+                <p class="font-bold uppercase">GT Bank / OPay</p>
+                <p class="text-xs">Account: SKYNET SYSTEMS</p>
+            </div>
+            <input type="text" id="cName" placeholder="Your Name" class="w-full border p-3 rounded mb-2 text-black">
+            <input type="text" id="cAddr" placeholder="Delivery Address" class="w-full border p-3 rounded mb-4 text-black">
+            <button onclick="send()" class="w-full bg-green-600 text-white py-4 rounded font-bold">I HAVE PAID</button>
+            <button onclick="closeModal()" class="w-full mt-2 text-gray-400 text-sm">Cancel</button>
+        </div>
+    </div>
+
+<script>
+    const myNumber = "2349075773669"; // PUT YOUR NUMBER HERE
+    const delivery = 3500;
+    const products = [
+        { id: 1, name: "iPhone 16 Pro Max", price: 2150000, img: "https://images.unsplash.com/photo-1727337166164-9686001d8995?w=400" },
+        { id: 2, name: "Infinix Hot 40 Pro", price: 245000, img: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=400" },
+        { id: 3, name: "Tecno Spark 20", price: 185000, img: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400" },
+        { id: 4, name: "Itel A70 (128GB)", price: 95000, img: "https://images.unsplash.com/photo-1546054454-aa26e2b734c7?w=400" },
+        { id: 5, name: "Redmi 13C", price: 145000, img: "https://images.unsplash.com/photo-1567581935884-3349723552ca?w=400" },
+        { id: 6, name: "Pressure Cooker", price: 45000, img: "https://images.unsplash.com/photo-1584905066893-7d5c142ba4e1?w=400" }
+    ];
+
+    let cart = {};
+    function render(data) {
+        document.getElementById('productGrid').innerHTML = data.map(p => `
+            <div class="bg-white p-2 shadow-sm rounded">
+                <img src="${p.img}" class="h-32 w-full object-cover rounded">
+                <h3 class="text-[11px] font-bold mt-2 h-8 overflow-hidden uppercase text-black">${p.name}</h3>
+                <p class="text-sm font-black text-gray-900">₦${p.price.toLocaleString()}</p>
+                <div class="flex items-center justify-between mt-2 border rounded p-1 bg-gray-50 text-black">
+                    <button onclick="qty(${p.id},-1)" class="w-8 h-8 bg-white rounded shadow">-</button>
+                    <span id="q-${p.id}">${cart[p.id] || 0}</span>
+                    <button onclick="qty(${p.id},1)" class="w-8 h-8 bg-orange-500 text-white rounded shadow">+</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function qty(id, d) {
+        cart[id] = (cart[id] || 0) + d;
+        if(cart[id] <= 0) delete cart[id];
+        document.getElementById(`q-${id}`).innerText = cart[id] || 0;
+        let total = 0;
+        for(let k in cart) { total += products.find(x => x.id == k).price * cart[k]; }
+        if(total > 0) {
+            document.getElementById('cartBar').classList.remove('hidden');
+            document.getElementById('totalPrice').innerText = "₦" + (total + delivery).toLocaleString();
+        } else {
+            document.getElementById('cartBar').classList.add('hidden');
         }
-        function searchProducts() {
-            const term = document.getElementById('searchInput').value.toLowerCase();
-            const grid = document.getElementById('grid');
-            grid.innerHTML = '';
-            stock.filter(i => i.name.toLowerCase().includes(term)).forEach((item, idx) => {
-                grid.innerHTML += `<div class="product-card"><img src="${item.img}?lock=${idx}" class="product-img"><div class="product-name">${item.name}</div><div class="product-price">₦ ${item.price.toLocaleString()}</div><button class="btn-buy" onclick="openModal('${item.name}', ${item.price})">BUY NOW</button></div>`;
-            });
+    }
+
+    function search() {
+        let v = document.getElementById('searchInput').value.toLowerCase();
+        render(products.filter(p => p.name.toLowerCase().includes(v)));
+    }
+
+    function openModal() { document.getElementById('modal').classList.remove('hidden'); }
+    function closeModal() { document.getElementById('modal').classList.add('hidden'); }
+
+    function send() {
+        const n = document.getElementById('cName').value;
+        const a = document.getElementById('cAddr').value;
+        if(!n || !a) return alert("Enter Name/Address");
+        let total = 0;
+        let msg = `*NEW ORDER*%0A%0A`;
+        for(let id in cart) {
+            let item = products.find(x => x.id == id);
+            msg += `• ${item.name} x${cart[id]}%0A`;
+            total += item.price * cart[id];
         }
-        function openModal(name, price) {
-            selectedItem = { name, price };
-            document.getElementById('modal').style.display = 'flex';
-            document.getElementById('mTitle').innerText = name;
-            document.getElementById('sumTotal').innerText = "₦" + (price + 4500).toLocaleString();
-        }
-        function closeModal() { document.getElementById('modal').style.display = 'none'; }
-        function sendToWhatsapp() {
-            const promo = document.getElementById('promoInput').value.toUpperCase();
-            let finalPrice = selectedItem.price + 4500;
-            if(promo === "SKYNET10") finalPrice -= 3000;
-            const text = `*SKYNETWRLDZ ORDER*%0A*Item:* ${selectedItem.name}%0A*Total:* ₦${finalPrice.toLocaleString()}%0A*Customer:* ${document.getElementById('custName').value}%0A*Address:* ${document.getElementById('custAddr').value}`;
-            window.open(`https://wa.me/${myNumber}?text=${text}`, '_blank');
-        }
-        loadStock();
-    </script>
+        msg += `%0A*Total:* ₦${(total+delivery).toLocaleString()}%0A*Customer:* ${n}%0A*Address:* ${a}`;
+        window.open(`https://wa.me/${myNumber}?text=${msg}`);
+    }
+    render(products);
+</script>
 </body>
-  </html>
-  
+</html>
+
